@@ -1,0 +1,35 @@
+             Leads
+
+                ↓
+
+      WhatsApp Web
+
+                ↓
+
+        Selenium
+
+                ↓
+
+Captura Nome
+
+Captura Telefone
+
+Captura Mensagem
+
+Captura Hora
+
+                ↓
+
+SQLite
+
+                ↓
+
+Dashboard em Python
+
+                ↓
+
+Exportar Excel
+
+                ↓
+
+Dashboard Power BI

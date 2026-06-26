@@ -1,23 +1,13 @@
 import time
 from selenium.webdriver.common.by import By
+from src.lead_detector import LeadDetector
+from src.lead_extractor import LeadExtractor
 
 class WhatsAppMonitor:
 
     def __init__(self, driver):
         self.driver = driver
-
-    def obter_conversas(self):
-
-        return self.driver.find_elements(
-            By.CSS_SELECTOR,
-            "div[data-testid='cell-frame-container']"
-        )    
-
-    def buscar_nao_lidas(self):
-        return self.driver.find_elements(
-            By.CSS_SELECTOR,
-            "span[data-testid='icon-unread-count']"
-        )    
+   
 
     def monitorar(self):
 
@@ -26,8 +16,6 @@ class WhatsAppMonitor:
         while True:
 
             conversas = self.obter_conversas()
-            print(f"Foram encontradas {len(conversas)} conversas.")
-            time.sleep(5)
 
             for conversa in conversas:
 
@@ -35,13 +23,24 @@ class WhatsAppMonitor:
                     By.CSS_SELECTOR,
                     "span[data-testid='icon-unread-count']"
                 )
-                if nao_lida:
 
-                    print("Nova conversa encontrada!")
+                if not nao_lida:
+                    continue
 
-                    nome = conversa.find_element(
-                        By.CSS_SELECTOR,
-                        "div[data-testid='cell-frame-title']"
-                    ).text
+                print("Nova conversa!")
 
-                    print(nome)
+                #conversa.click()
+                print(conversa.text)
+                break
+
+                time.sleep(2)
+
+                if LeadDetector.is_ctwa(self.driver):
+
+                    print(">>> LEAD VINDO DE ANÚNCIO <<<")
+
+                else:
+
+                    print("Conversa comum.")
+
+            time.sleep(5)

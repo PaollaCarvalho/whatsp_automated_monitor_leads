@@ -1,14 +1,35 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from src.models.lead import Lead
+from datetime import datetime, timedelta
 
 
-class LeadExtractor:
+class ContactExtractor:
 
     @staticmethod
-    def get_name(driver):
+    def extract(driver):
 
-        elemento = driver.find_element(
-            By.CSS_SELECTOR,
-            "header span[dir='auto']"
+        wait = WebDriverWait(driver, 10)
+
+        painel = wait.until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, "[data-testid='chat-info-drawer']")
+            )
         )
 
-        return elemento.text
+        telefone = wait.until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, "[data-testid='contact-info-subtitle selectable-text']")
+            )
+        ).text
+
+        nome = painel.find_element(
+            By.CSS_SELECTOR,
+            "[data-testid='selectable-text']"
+        ).text
+
+        return Lead(
+            nome=nome.replace("~", "").strip(),
+            telefone=telefone,
+            data= datetime.now())

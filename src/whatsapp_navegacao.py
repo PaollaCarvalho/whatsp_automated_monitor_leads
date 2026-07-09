@@ -2,6 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
+import time
 
 
 class WhatsAppNavigator:
@@ -24,6 +25,30 @@ class WhatsAppNavigator:
             By.CSS_SELECTOR,
             "div[data-testid='cell-frame-container']"
         )
+    
+    def obter_nome_chat(self, chat):
+        'captura apenas nome(ou numero) do lead dentro do conteiner do chat'
+
+        spans = chat.find_elements(
+            By.CSS_SELECTOR,
+            "[data-testid='cell-frame-title'] span"
+        )
+
+        # Método principal
+        if len(spans) >= 2:
+            return spans[1].text.strip()
+        
+        # 2° metodo fallback
+        for span in spans:
+
+            texto = span.text.strip()
+
+            if texto and "não lida" not in texto.lower():
+                print("[Navigator] Fallback utilizado.")
+                return texto
+
+        print("[Navigator] Não foi possível identificar o chat.")
+        return None
 
     def obter_naolidas(self):
         """Retorna apenas conversas com mensagens não lidas."""
@@ -32,6 +57,18 @@ class WhatsAppNavigator:
         unread = []
 
         for chat in chats:
+
+            arquivada = bool(
+                chat.find_elements(
+                    By.CSS_SELECTOR,
+                    "[data-testid='archive-refreshed']"
+                )
+            )
+
+            #ignora arquivada
+            if arquivada:
+                print("Achei Arquivadas!")
+                continue
 
             if chat.find_elements(
                 By.CSS_SELECTOR,
@@ -75,16 +112,17 @@ class WhatsAppNavigator:
         print("[Navigator] Conversa aberta.")
         return True
     
-    def ac_abrir_chat_infos(self, chat):
-        if chat.find_elements(
-                By.CSS_SELECTOR,"span[data-testid='conversation-info-header-chat-title']"):
 
-            self.wait.until(EC.visibility_of(chat))
 
-            ActionChains(self.driver)\
-                .move_to_element(chat)\
-                .pause(0.3)\
-                .click()\
-                .perform()
-            
-            return True
+    def ac_abrir_info_contato(self):
+
+        header = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(
+                (
+                    By.CSS_SELECTOR,
+                    "[data-testid='conversation-info-header-chat-title']"
+                )
+            )
+        )
+
+        header.click()

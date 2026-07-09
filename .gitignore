@@ -1,0 +1,16 @@
+# Ambiente virtual
+venv/
+
+# Cache do Python
+__pycache__/
+
+# Logs
+log/
+
+# Configurações do VSCode
+.vscode/
+
+# Documentos e arquivos específicos
+DOC.txt
+ideia.txt
+credentials.json
